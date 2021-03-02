@@ -1,0 +1,5 @@
+#gameCanvas {
+  background-image: url("./sprites/background.jpg");
+
+  color: aqua;
+}
