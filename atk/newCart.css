@@ -1,0 +1,125 @@
+#goBack {
+  background-color: white;
+  outline: none;
+  border: none;
+  font-size: 20px;
+  margin-top: 10px;
+  font-family: "Montserrat", sans-serif;
+  margin-left: 30px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+#shopContainer {
+  margin-left: 30px;
+  display: table;
+  border-spacing: 20px;
+  width: 400px;
+  background-color: #f6f6f6;
+  margin-bottom: 20px;
+}
+.itemRow {
+  display: table-row;
+  width: 100%;
+}
+.item {
+  display: table-cell;
+  vertical-align: top;
+}
+.item img {
+  width: 100px;
+}
+
+.stats {
+  display: table-cell;
+  vertical-align: top;
+}
+.stats h2 {
+  font-weight: 400;
+  font-size: 1rem;
+  margin-top: 5px;
+}
+.stats .remove {
+  cursor: pointer;
+  outline: none;
+}
+.stats input {
+  width: 95px;
+  outline: none;
+}
+
+#tableTable {
+  display: table;
+  border-spacing: 3px;
+}
+#tableTable .tableCell {
+  display: table-cell;
+  width: 48%;
+  background-color: #ffffff;
+  vertical-align: top;
+  align-content: center;
+}
+.tableCell p1 {
+  font-size: 0.9em;
+  font-weight: 500;
+  margin: 40px;
+  color: rgb(138, 138, 138);
+}
+.tableCell p2 {
+  font-size: 0.9em;
+  font-weight: 500;
+  margin: 0px 40px;
+  color: rgb(138, 138, 138);
+}
+
+#shopping {
+  margin-left: 30px;
+  color: #aaaaaa;
+}
+
+#bill {
+  width: 300px;
+  text-align: center;
+  background-color: #f6f6f6;
+  float: right;
+  color: #aaaaaa;
+  margin-right: 40px;
+  margin-bottom: 20px;
+  box-shadow: 6px 5px 0px 0px #ebebeb;
+}
+#billTable {
+  display: table;
+  border-spacing: 20px 30px;
+}
+.rows {
+  display: table-row;
+}
+.cells {
+  display: table-cell;
+  font-weight: 400;
+  text-align: left;
+}
+.cellz {
+  display: table-cell;
+  font-weight: 300;
+}
+
+.total {
+  font-weight: 600;
+  color: #3a852e;
+}
+
+#billTable #checkOut {
+  width: 120px;
+  margin-left: 0px;
+  height: 35px;
+  cursor: pointer;
+}
+
+#billTable .hidden {
+  display: none;
+}
+
+#shopContainer .itemImage {
+  cursor: pointer;
+}
