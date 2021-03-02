@@ -478,10 +478,12 @@ function drawn(frog) {
         frog.image = frogSplash;
         lifes--;
         lifeArray.splice(lifeArray[lifeArray.length], 1);
-        death = true;
+        setTimeout(() => {
+            death = true;
             setTimeout(() => {
                 frog.reset();
-            }, 1000);
+            }, 990);
+        }, 10);
     };
 };
 
@@ -796,15 +798,14 @@ function refreshScreen(timeStamp) {
     context.fillStyle = 'white';
     context.fillText(points, unit * 2 + 10, 32);
     context.fillText(hightScore, unit * 8 + 20, 32);
- 
     drawn(frog);
     frog.draw();
-    timer.draw();
-    timer.diminish();
     next.draw();
     next.levelUp() ;
     over.draw();
     over.gameEnd() ;
+    timer.draw();
+    timer.diminish();
     start.startGame();
     start.draw();
     
