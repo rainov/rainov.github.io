@@ -725,8 +725,8 @@ for (let i = 0; i < 3; i++) {
     raceCarRow.push(new Car(canvas.width - ( 2 * unit ) - ( i * unit *  5), canvas.height - unit * 6, 1.4 * unit, 1, raceCar));   
     trucksRow.push(new Car( unit*2 + ( i * unit * 5), canvas.height - unit * 7, -1.4 * unit, 2, truck));     
     lifeArray.push(new Life(unit * (11 + i), canvas.height - unit + 10, life)); 
-    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, 3, -1 * unit, turtlesImage, false, true, false, false ));   
-    turtleArray2.push(new Turtles(  unit * 2 + ( i * 6 * unit), canvas.height - unit * 12, 2, -1.5 * unit, turtlesRight, false, true, false, false  ));    
+    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, 3, -1 * unit, turtlesImage));   
+    turtleArray2.push(new Turtles(  unit * 2 + ( i * 6 * unit), canvas.height - unit * 12, 2, -1.5 * unit, turtlesRight));    
     logsArray.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 10, 3, 1 * unit, log3));   
     logsArray2.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 6), canvas.height - unit * 11, 4, 1.6 * unit, log4));
     logsArray3.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 13, 3, 1.9 * unit, log3)); 
