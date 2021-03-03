@@ -880,10 +880,8 @@ window.addEventListener('keydown', function (event) {
                 levelUp = false;
                 objSpeed += 0.5;
                 score = 0;
-                setTimeout( () => {
-                    timer.length = 9 ;
-                    timer.speed = 0.004 ;
-                }, 500 ) ;
+                timer.length = 9 ;
+                timer.speed = 0.004 ;
                 break;
         }
     } else if ( startGame ) {
@@ -903,10 +901,8 @@ window.addEventListener('keydown', function (event) {
                 score = 0;
                 pointsLevel = 740;
                 objSpeed = 1 ;
-                setTimeout( () => {
                     timer.length = 9 ;
                     timer.speed = 0.004 ;
-                }, 500 ) ;
                 for (let i = 0; i < 3; i++) {
                     lifeArray.push(new Life(unit * (11 + i), canvas.height - unit + 10, life));
                 };
