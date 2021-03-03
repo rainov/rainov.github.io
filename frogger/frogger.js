@@ -454,6 +454,24 @@ class Timer {
             this.length = 0;
             this.speed = 0;
             frog.image = frogDeath;
+            death = true;
+            lifes--;
+            lifeArray.splice(lifeArray[lifeArray.length], 1);
+            setTimeout(() => {
+                frog.reset();
+            }, 1090);
+        } ;
+        if ( lifes < 0 || score == 5 || startGame ) {
+            this.length = 0 ;
+            this.speed = 0 ;
+        } ;
+    } ;
+    /*diminish() {
+        this.length = this.length - this.speed;
+        if (this.length < 0) {
+            this.length = 0;
+            this.speed = 0;
+            frog.image = frogDeath;
             lifeArray.splice(lifeArray[lifeArray.length], 1);
             setTimeout(() => {
                 death = true;
@@ -467,23 +485,9 @@ class Timer {
             this.length = 0 ;
             this.speed = 0 ;
         } ;
-    } ;
+    } ;*/
 } ;
 
-
-//When the frog gets to the level of the river, this function detects water collision,
-// based on the ride variable.
-function drawn(frog) {
-    if (frog.y < canvas.height - unit * 8 && !ride && frog.y > canvas.height - unit * 14 - 1) {
-        frog.image = frogSplash;
-        lifes--;
-        lifeArray.splice(lifeArray[lifeArray.length], 1);
-        death = true;
-            setTimeout(() => {
-                frog.reset();
-            }, 1000);
-    };
-};
 
 
 class Frog {
@@ -492,6 +496,20 @@ class Frog {
         this.y = y;
         this.image = image;
     };
+
+    //When the frog gets to the level of the river, this function detects water collision,
+    // based on the ride variable.
+    drawn() {
+        if (this.y < canvas.height - unit * 8 && !ride && this.y > canvas.height - unit * 14 - 1) {
+            frog.image = frogSplash;
+            lifes--;
+            lifeArray.splice(lifeArray[lifeArray.length], 1);
+            death = true;
+                setTimeout(() => {
+                    this.reset();
+                }, 1000);
+        };
+    }
     
     //If the frog dies or reaches the safe area at the end, this function
     //repositions the it, resets the timer and start refreshing the screen again.
@@ -513,7 +531,8 @@ class Frog {
 
     //All the movements are setting the ride variable to false, so if it jumps from a log or turtle
     //and not land on a safe zone, its drawning in the river.
-    //The move up key also adds points based on the current reached level.
+    //The move up key also adds points based on the current reached level. Going back and forward does not award points.
+    //Only if you reach vertical level that you havent been before.
     moveUp() {
         ride = false
         this.x = this.x;
@@ -796,17 +815,17 @@ function refreshScreen(timeStamp) {
     context.fillStyle = 'white';
     context.fillText(points, unit * 2 + 10, 32);
     context.fillText(hightScore, unit * 8 + 20, 32);
- 
-    drawn(frog);
-    frog.draw();
-    timer.draw();
+    
     timer.diminish();
-    next.draw();
-    next.levelUp() ;
-    over.draw();
-    over.gameEnd() ;
+    timer.draw();
+    frog.drawn();
+    frog.draw();
     start.startGame();
     start.draw();
+    next.levelUp() ;
+    next.draw();
+    over.gameEnd() ;
+    over.draw();
     
     if (!death) {
         window.requestAnimationFrame(refreshScreen);
