@@ -22,6 +22,14 @@ var savedHighScore = JSON.parse(window.localStorage.getItem('froggerHighScore'))
     var savedHighScore = 0;
 };
 
+//Game screens
+var startScreen = new Image() ;
+startScreen.src = './sprites/startScreen.png'
+var gameOverImage = new Image();
+gameOverImage.src = './sprites/gameOver.png';
+var levelUpImage = new Image();
+levelUpImage.src = './sprites/levelUp.png';
+
 //Car images
 var carRow1 = new Image();
 carRow1.src = './sprites/carRow1.png';
@@ -110,27 +118,25 @@ log3.src = './sprites/tree3.png'
 var log4 = new Image();
 log4.src = './sprites/tree4.png'
 
-//Game screens
-var startScreen = new Image() ;
-startScreen.src = './sprites/startScreen.png'
-var gameOverImage = new Image();
-gameOverImage.src = './sprites/gameOver.png';
-var levelUpImage = new Image();
-levelUpImage.src = './sprites/levelUp.png';
 
 
-
-class Car {
+class GlobalObject {
     constructor(x, y, speed, length, image) {
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.length = length;
         this.image = image;
-    };
+    }
 
     draw() {
         context.drawImage(this.image, this.x, this.y);
+    };
+}
+
+class Car extends GlobalObject {
+    constructor(x, y, speed, length, image) {
+        super(x, y, speed, length, image) ;
     };
 
     move(deltaTime) {
@@ -207,6 +213,42 @@ class Car {
 };
 
 
+    
+class RiverObjects extends GlobalObject {
+    constructor(x, y, speed, length, image) {
+        super(x, y, speed, length, image) ;
+    };
+
+    draw() {
+        context.drawImage(this.image, this.x, this.y);
+    };
+
+    //There is a GlobalObject variable named 'ride'... this functions sets it to true, if there is 
+    //collision with the frog. Also disables the ride function if the frog stays 
+    //near the screen end, so it sunks if the turtles or logs go over the screen.
+    carry(frog, deltaTime) {
+        this.bottom = this.y + unit;
+        this.right = this.x + unit * this.length;
+        if (this.safe && this.x + 20 <= frog.x + unit &&
+            this.right - 20 >= frog.x &&
+            this.bottom - 1 >= frog.y &&
+            this.y <= frog.y + unit - 1) {
+                frog.x = frog.x + ( this.speed  * deltaTime / 1000 ) * objSpeed ;
+                ride = true;
+                if (frog.x <= 0) {
+                    frog.x = 0;
+                };
+                if (frog.x + unit >= this.right - unit && frog.x == 0) {
+                    setTimeout(() => {
+                        ride = false;
+                    }, 900);
+                };
+        };
+    };
+
+};
+
+
 //Random set of turtles is sunking each time. This is the controller function for that.
 function sunk( array1, array2 ) {
     setTimeout( () => {
@@ -222,49 +264,17 @@ function diveTimer() {
         sunk( turtleArray, turtleArray2) ;
     }, 6000 );
 };
-    
 
 //Ninja turtles
-class Turtles {
-    constructor(x, y, length, speed, image) {
-        this.x = x;
-        this.y = y;
-        this.length = length;
-        this.speed = speed;
-        this.image = image;
+class Turtles extends RiverObjects{
+    constructor(x, y, speed, length, image) {
+        super(x, y, speed, length, image) ;
         this.sunk = false; //When true, starts the sunk animation.
         this.safe = true; //Goes false when the turtles are submurged... The frog doesnt get ride status.
         this.sunkStart = false; //Controls the sunk animation.
         this.startMove = false; //Controls the swim animation.
-    }
-
-    draw() {
-        context.drawImage(this.image, this.x, this.y);
     };
 
-    //There is a global variable named 'ride'... this functions sets it to true, if there is 
-    //collision with the frog. Also disables the ride function if the frog stays 
-    //near the screen end, so it sunks if the turtles go over the screen.
-    carry(frog, deltaTime) {
-        this.bottom = this.y + unit;
-        this.right = this.x + unit * this.length;
-        if (this.safe && this.x + 20 <= frog.x + unit &&
-            this.right - 20 >= frog.x &&
-            this.bottom - 1 >= frog.y &&
-            this.y <= frog.y + unit - 1) {
-            frog.x = frog.x + ( this.speed  * deltaTime / 1000 ) * objSpeed ;
-            ride = true;
-            if (frog.x <= 0) {
-                frog.x = 0;
-            };
-            if (frog.x + unit >= this.right - unit && frog.x == 0) {
-                setTimeout(() => {
-                    ride = false;
-                }, 900);
-            };
-        };
-    };
-    
     //Controls animation and behaviour of the sunking
     sunking() {
         if ( this.sunk && !this.sunkStart ) {
@@ -328,7 +338,7 @@ class Turtles {
     move(deltaTime) {
         this.right = this.x + this.length * unit;
         this.x = this.x + ( this.speed  * deltaTime / 1000 ) * objSpeed ;
-        if (this.speed < 0 && this.right <= -unit) {
+        if (this.right <= -unit) {
             this.x = canvas.width;
         } ;
         if ( !this.sunk && !this.startMove) {
@@ -387,37 +397,10 @@ class Turtles {
 //End of Ninja Turtles
 
 
-class Log {
-    constructor(x, y, length, speed, image) {
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.length = length;
-        this.image = image;
-    };
-
-    draw() {
-        context.drawImage(this.image, this.x, this.y);
-    };
-    //Same as turtles carry function
-    carry(frog, deltaTime) {
-        this.bottom = this.y + unit;
-        this.right = this.x + unit * this.length;
-        if (this.x + 20 <= frog.x + unit &&
-            this.right - 20 >= frog.x &&
-            this.bottom - 1 >= frog.y &&
-            this.y <= frog.y + unit - 1) {
-            frog.x = frog.x + ( this.speed  * deltaTime / 1000 ) * objSpeed ;
-            ride = true;
-            if (frog.x + unit >= canvas.width) {
-                frog.x = canvas.width - unit;
-            };
-            if (frog.x <= this.x + unit && frog.x == canvas.width - unit) {
-                setTimeout(() => {
-                    ride = false;
-                }, 900);
-            };
-        };
+class Log extends RiverObjects {
+    constructor(x, y, speed, length, image) {
+        super(x, y, speed, length, image) ;
+        this.safe = true;
     };
 
     //Movement to the right
@@ -432,13 +415,10 @@ class Log {
 
 
 
-class Timer {
-    constructor(x, y, color, length, speed) {
-        this.x = x;
-        this.y = y;
+class Timer extends GlobalObject {
+    constructor(x, y, speed, length, color) {
+        super(x, y, speed, length) ;
         this.color = color;
-        this.length = length;
-        this.speed = speed;
     }
 
     draw() {
@@ -473,12 +453,22 @@ class Timer {
 } ;
 
 
-
-class Frog {
+class SimpleGlobalObject {
     constructor(x, y, image) {
         this.x = x;
         this.y = y;
         this.image = image;
+    };
+
+    draw() {
+        context.drawImage(this.image, this.x, this.y);
+    };
+}
+
+
+class Frog extends SimpleGlobalObject{
+    constructor(x, y, image) {
+        super(x, y, image);
     };
 
     //When the frog gets to the level of the river, this function detects water collision,
@@ -507,11 +497,6 @@ class Frog {
         lastTimeStamp = lastTimeStamp + 1000 ;
         window.requestAnimationFrame(refreshScreen);
     };
-
-    draw() {
-        context.drawImage(this.image, this.x, this.y);
-    };
-
 
     //All the movements are setting the ride variable to false, so if it jumps from a log or turtle
     //and not land on a safe zone, its drawning in the river.
@@ -567,30 +552,18 @@ class Frog {
 
 
 //The life icons on the bottom
-class Life {
+class Life extends SimpleGlobalObject{
     constructor(x, y, image) {
-        this.x = x;
-        this.y = y;
-        this.image = image;
-    };
-
-    draw() {
-        context.drawImage(this.image, this.x, this.y);
+        super(x, y, image);
     };
 };
 
 
 //There are 3 different game screens showed based on game states
-class GameScreen {
-    constructor( x, y, image ) {
-        this.x = x ;
-        this.y = y ;
-        this.image = image ;
+class GameScreen extends SimpleGlobalObject{
+    constructor(x, y, image) {
+        super(x, y, image);
     };
-
-    draw() {
-        context.drawImage(this.image, this.x, this.y);
-    } ;
 
     startGame() {
         if ( startGame ) {
@@ -640,11 +613,9 @@ function appear(array) {
 
 
 //The lilly pads at the end
-class LillyPads {
+class LillyPads extends SimpleGlobalObject{
     constructor(x, y, image) {
-        this.x = x;
-        this.y = y;
-        this.image = image;
+        super(x, y, image);
         this.safe = true; //This goes false when there is a saved frog on the lilly. Next jump on that leaf will be deadly.
         this.bonus = false; //This is randomly set to true from the appear function. If its true and the lilly is safe, a bonusFly appears.
     };
@@ -705,7 +676,7 @@ class LillyPads {
 
 
 var frog = new Frog(unit * 7, canvas.height - unit * 2, frogImage);
-var timer = new Timer(unit * 2 - 15, canvas.height - 37, 'yellow', 9, 0.004);
+var timer = new Timer(unit * 2 - 15, canvas.height - 37, 0.004, 9,'yellow');
 
 //the gameScreens are loaded and wait off screen.
 var start = new GameScreen( -unit * 14, 0, startScreen ) ;
@@ -736,11 +707,11 @@ for (let i = 0; i < 3; i++) {
     raceCarRow.push(new Car(canvas.width - ( 2 * unit ) - ( i * unit *  5), canvas.height - unit * 6, 1.4 * unit, 1, raceCar));   
     trucksRow.push(new Car( unit*2 + ( i * unit * 5), canvas.height - unit * 7, -1.4 * unit, 2, truck));     
     lifeArray.push(new Life(unit * (11 + i), canvas.height - unit + 10, life)); 
-    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, 3, -1 * unit, turtlesImage));      
-    turtleArray2.push(new Turtles(  unit * 2 + ( i * 6 * unit), canvas.height - unit * 12, 2, -1.5 * unit, turtlesRight));    
-    logsArray.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 10, 3, 1 * unit, log3));   
-    logsArray2.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 6), canvas.height - unit * 11, 4, 1.6 * unit, log4));
-    logsArray3.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 13, 3, 1.9 * unit, log3)); 
+    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, -1 * unit, 3, turtlesImage));      
+    turtleArray2.push(new Turtles(  unit * 2 + ( i * 6 * unit), canvas.height - unit * 12, -1.5 * unit, 2, turtlesRight));    
+    logsArray.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 10, 1 * unit, 3, log3));   
+    logsArray2.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 6), canvas.height - unit * 11, 1.6 * unit, 4, log4));
+    logsArray3.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 13, 1.9 * unit, 3, log3)); 
 }
 
 
@@ -811,7 +782,6 @@ function refreshScreen(timeStamp) {
     } else {
         context.fillText(hightScore, unit * 8 + 20, 32);
     }
-    
     
     timer.diminish();
     timer.draw();
