@@ -4,18 +4,23 @@ const context = canvas.getContext('2d');
 canvas.width = 672;
 canvas.height = 744;
 
-var startGame = true;
-var unit = 48;
-var death = false;
-var objSpeed = 1;
+var startGame = true; //Shows the gameStart screen and changes the space button behavior.
+var unit = 48; //The default size unit
+var death = false; //In case of death, this stops refreshing of the screen for a second
+var objSpeed = 1; //Controls the speed of all objects, except the frog and the timer, increases on leveleUp
 var lifes = 3;
-var score = 0;
-var gameOver = false;
-var ride = false;
-var levelUp = false;
-var points = 0;
-var pointsLevel = 740;
-var hightScore = 0;
+var score = 0; //This adds up to 5, when the frog reaches a leaf, and then resets to 0 for the new level.
+var gameOver = false; //After all lifes are lost, this goes true and changes the behavior of the space button and shows the gameOver screen.
+var ride = false; //This resets to false every time when the frog moves. Its true only with collision with turtles or logs and controls the death from river.
+var levelUp = false; //Upon saving all 5 frogs, this shows up the levelUp screen and changes the behavior of the space button.
+var points = 0; //The current points displayed on the screen.
+var pointsLevel = 740; //This is diminnishing when the frog moves up. Prevents accumulating points for going back and forward.
+var hightScore = 0; //HighScore for the current game, not displayed.
+if (JSON.parse(window.localStorage.getItem('froggerHighScore'))) {
+var savedHighScore = JSON.parse(window.localStorage.getItem('froggerHighScore')); //Alltime highscore.. thats the one displayed on the screen.
+} else {
+    var savedHighScore = 0;
+};
 
 //Car images
 var carRow1 = new Image();
@@ -126,7 +131,7 @@ class Car {
 
     draw() {
         context.drawImage(this.image, this.x, this.y);
-    }
+    };
 
     move(deltaTime) {
         this.x = this.x + ( this.speed  * deltaTime / 1000 ) * objSpeed ;
@@ -149,7 +154,7 @@ class Car {
                 frog.reset();
             }, 1000);
         };
-    }
+    };
 
     //The cars appear on random place everytime when they get off screen... this function prevents overlapping
     // and allways puts the cars in the correct order as they are in the array. 
@@ -160,64 +165,64 @@ class Car {
                     this.x = -unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[2].distance - unit * Math.ceil(Math.random() * 8);
-                }
-            }
+                };
+            };
             if (this.speed < 0 && this.x == carsArr[0].x) {
                 if (carsArr[2].right < canvas.width) {
                     this.x = canvas.width + unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[2].right + unit * Math.ceil(Math.random() * 8);
-                }
-            }
+                };
+            };
             if (this.speed > 0 && this.x == carsArr[1].x) {
                 if (carsArr[0].distance > 0) {
                     this.x = -unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[0].distance - unit * Math.ceil(Math.random() * 8);
-                }
-            }
+                };
+            };
             if (this.speed < 0 && this.x == carsArr[1].x) {
                 if (carsArr[0].right < canvas.width) {
                     this.x = canvas.width + unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[0].right + unit * Math.ceil(Math.random() * 8);
-                }
-            }
+                };
+            };
             if (this.speed > 0 && this.x == carsArr[2].x) {
                 if (carsArr[1].distance > 0) {
                     this.x = -unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[1].distance - unit * Math.ceil(Math.random() * 8);
-                }
-            }
+                };
+            };
             if (this.speed < 0 && this.x == carsArr[2].x) {
                 if (carsArr[1].right < canvas.width) {
                     this.x = canvas.width + unit * Math.ceil(Math.random() * 8);
                 } else {
                     this.x = carsArr[1].right + unit * Math.ceil(Math.random() * 8);
-                }
-            }
-        }
-    }
-}
+                };
+            };
+        };
+    };
+};
 
 
-//Controller function for the turtle's sunking
+//Random set of turtles is sunking each time. This is the controller function for that.
 function sunk( array1, array2 ) {
     setTimeout( () => {
         array1[ Math.floor(Math.random() * 3) ].sunk = true ;
         setTimeout( () => {
-            array2[ Math.floor(Math.random() * 3) ].sunk = true ; ;
+            array2[ Math.floor(Math.random() * 3) ].sunk = true ;
         }, 1000 ) ;
     }, 1000 ) ;
 } ;
-//Timer for the controller
+//Timer for the sunk controller. It ensures that the first 2 sets of turtles have finished the sunk move, before it starts new.
 function diveTimer() {
-setInterval(() => {
-    sunk( turtleArray, turtleArray2) ;
-}, 6000 );
-}
-
+    setInterval(() => {
+        sunk( turtleArray, turtleArray2) ;
+    }, 6000 );
+};
+    
 
 //Ninja turtles
 class Turtles {
@@ -227,10 +232,10 @@ class Turtles {
         this.length = length;
         this.speed = speed;
         this.image = image;
-        this.sunk = false;
-        this.safe = true;
-        this.sunkStart = false ;
-        this.startMove = false ;
+        this.sunk = false; //When true, starts the sunk animation.
+        this.safe = true; //Goes false when the turtles are submurged... The frog doesnt get ride status.
+        this.sunkStart = false; //Controls the sunk animation.
+        this.startMove = false; //Controls the swim animation.
     }
 
     draw() {
@@ -256,9 +261,9 @@ class Turtles {
                 setTimeout(() => {
                     ride = false;
                 }, 900);
-            }
-        }
-    }
+            };
+        };
+    };
     
     //Controls animation and behaviour of the sunking
     sunking() {
@@ -268,7 +273,7 @@ class Turtles {
             } else {
                 this.image = turtles2Sunk1;
             };
-            this.sunkStart = true ;
+            this.sunkStart = true;
             setTimeout(() => {
                 if (this.length > 2) {
                     this.image = turtlesSunk2;
@@ -288,7 +293,7 @@ class Turtles {
                             this.image = turtles2Sunk4;
                         };
                         this.safe = false;
-                        ride = false;
+                        ride = false; //The frog dies at this point
                         setTimeout(() => {
                             if (this.length > 2) {
                                 this.image = turtlesSunk3;
@@ -308,17 +313,16 @@ class Turtles {
                                     } else {
                                         this.image = turtles2Sunk1;
                                     };
-                                    this.sunk = false;
+                                    this.sunk = false; //Normal swim animation can start again.
                                     this.sunkStart = false;
-                                    //this.startMove = false ;
                                 }, 400);
                             }, 400);
                         }, 1500);
                     }, 1000);
                 }, 400);
             }, 400);
-        }
-    } 
+        };
+    };
     
     //Movement to the left and also controls the animation based on state
     move(deltaTime) {
@@ -328,7 +332,7 @@ class Turtles {
             this.x = canvas.width;
         } ;
         if ( !this.sunk && !this.startMove) {
-            this.swim() ;
+            this.swim() ; //If not in a state of sunking, normal swim animation is used.
         } ;
     };
 
@@ -338,46 +342,46 @@ class Turtles {
             this.image = turtlesRight2;
         } else if (this.length == 3 && !this.sunk) {
             this.image = turtlesImage2;
-        }
+        };
         this.startMove = true ;
         setTimeout(() => {
             if (this.length < 3 && !this.sunk) {
                 this.image = turtlesRight3;
             } else if (this.length == 3 && !this.sunk) {
                 this.image = turtlesImage3;
-            }
+            };
             setTimeout(() => {
                 if (this.length < 3 && !this.sunk) {
                     this.image = turtlesRight4;
                 } else if (this.length == 3 && !this.sunk) {
                     this.image = turtlesImage4;
-                }
+                };
                 setTimeout(() => {
                     if (this.length < 3 && !this.sunk) {
                         this.image = turtlesRight3;
                     } else if (this.length == 3 && !this.sunk) {
                         this.image = turtlesImage3;
-                    }
+                    };
                     setTimeout(() => {
                         if (this.length < 3 && !this.sunk) {
                             this.image = turtlesRight2;
                         } else if (this.length == 3 && !this.sunk) {
                             this.image = turtlesImage2;
-                        }
+                        };
                         setTimeout(() => {
                             if (this.length < 3 && !this.sunk) {
                                 this.image = turtlesRight;
                             } else if (this.length == 3 && !this.sunk) {
                                 this.image = turtlesImage;
-                            }
+                            };
                             setTimeout( () => {
                                 this.startMove = false ;
-                            }, 1000) 
-                        }, 300)
-                    }, 300)
-                }, 300)
-            }, 300)
-        }, 300)
+                            }, 1000);
+                        }, 300);
+                    }, 300);
+                }, 300);
+            }, 300);
+        }, 300);
     };
 };
 //End of Ninja Turtles
@@ -407,14 +411,14 @@ class Log {
             ride = true;
             if (frog.x + unit >= canvas.width) {
                 frog.x = canvas.width - unit;
-            }
+            };
             if (frog.x <= this.x + unit && frog.x == canvas.width - unit) {
                 setTimeout(() => {
                     ride = false;
                 }, 900);
-            }
+            };
         };
-    }
+    };
 
     //Movement to the right
     swim(deltaTime) {
@@ -423,7 +427,7 @@ class Log {
         if (this.x >= canvas.width) {
             this.x = 0 - unit * this.length;
         };
-    }
+    };
 };
 
 
@@ -433,7 +437,7 @@ class Timer {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.length = length
+        this.length = length;
         this.speed = speed;
     }
 
@@ -447,7 +451,7 @@ class Timer {
     };
 
     //This controls the animation of the timer and the behaviour of the frog image
-    // if the time goes off
+    //if the time goes off
     diminish() {
         this.length = this.length - this.speed;
         if (this.length < 0) {
@@ -459,33 +463,13 @@ class Timer {
             lifeArray.splice(lifeArray[lifeArray.length], 1);
             setTimeout(() => {
                 frog.reset();
-            }, 1090);
+            }, 1000);
         } ;
         if ( lifes < 0 || score == 5 || startGame ) {
             this.length = 0 ;
             this.speed = 0 ;
         } ;
     } ;
-    /*diminish() {
-        this.length = this.length - this.speed;
-        if (this.length < 0) {
-            this.length = 0;
-            this.speed = 0;
-            frog.image = frogDeath;
-            lifeArray.splice(lifeArray[lifeArray.length], 1);
-            setTimeout(() => {
-                death = true;
-                lifes--;
-                setTimeout(() => {
-                    frog.reset();
-                }, 990);
-            }, 10);
-        } ;
-        if ( lifes < 0 || score == 5 || startGame ) {
-            this.length = 0 ;
-            this.speed = 0 ;
-        } ;
-    } ;*/
 } ;
 
 
@@ -500,16 +484,16 @@ class Frog {
     //When the frog gets to the level of the river, this function detects water collision,
     // based on the ride variable.
     drawn() {
-        if (this.y < canvas.height - unit * 8 && !ride && this.y > canvas.height - unit * 14 - 1) {
-            frog.image = frogSplash;
-            lifes--;
-            lifeArray.splice(lifeArray[lifeArray.length], 1);
-            death = true;
-                setTimeout(() => {
-                    this.reset();
-                }, 1000);
+    if (this.y < canvas.height - unit * 8 && !ride && this.y > canvas.height - unit * 14 - 1) {
+        frog.image = frogSplash;
+        lifes--;
+        lifeArray.splice(lifeArray[lifeArray.length], 1);
+        death = true;
+            setTimeout(() => {
+                this.reset();
+            }, 1000);
         };
-    }
+    };
     
     //If the frog dies or reaches the safe area at the end, this function
     //repositions the it, resets the timer and start refreshing the screen again.
@@ -522,11 +506,11 @@ class Frog {
         death = false;
         lastTimeStamp = lastTimeStamp + 1000 ;
         window.requestAnimationFrame(refreshScreen);
-    }
+    };
 
     draw() {
         context.drawImage(this.image, this.x, this.y);
-    }
+    };
 
 
     //All the movements are setting the ride variable to false, so if it jumps from a log or turtle
@@ -542,6 +526,9 @@ class Frog {
             points += 10;
             if (hightScore < points) {
                 hightScore = points;
+                if (savedHighScore < hightScore) {
+                window.localStorage.setItem('froggerHighScore', JSON.stringify(hightScore));
+                };
             }
         } else {
             pointsLevel = pointsLevel;
@@ -585,12 +572,12 @@ class Life {
         this.x = x;
         this.y = y;
         this.image = image;
-    }
+    };
 
     draw() {
         context.drawImage(this.image, this.x, this.y);
-    }
-}
+    };
+};
 
 
 //There are 3 different game screens showed based on game states
@@ -599,7 +586,7 @@ class GameScreen {
         this.x = x ;
         this.y = y ;
         this.image = image ;
-    }
+    };
 
     draw() {
         context.drawImage(this.image, this.x, this.y);
@@ -611,18 +598,19 @@ class GameScreen {
         } else {
             this.x = -unit * 14 ;
         } ;
-    }
+    };
 
     gameEnd() {
         if ( lifes < 0 ) {
+            //console.log(JSON.parse(window.localStorage.getItem('froggerHighScore')));
             gameOver = true;
             setTimeout( () => {
                 this.x = 0 ;
             }, 500 ) ;
          } else {
              this.x = -unit * 14 ;
-         }
-    }
+         };
+    };
 
     levelUp() {
         if ( score == 5 ) {
@@ -633,9 +621,9 @@ class GameScreen {
             }, 500 ) ;
          } else {
              this.x = -unit * 14 ;
-         }
-    }
-}
+         };
+    };
+};
 
 
 //This function controls the bonusFlys that appear on the score leafs.
@@ -652,16 +640,16 @@ function appear(array) {
 
 
 //The lilly pads at the end
-class ScoreFrog {
+class LillyPads {
     constructor(x, y, image) {
         this.x = x;
         this.y = y;
         this.image = image;
-        this.safe = true;
-        this.bonus = false;
+        this.safe = true; //This goes false when there is a saved frog on the lilly. Next jump on that leaf will be deadly.
+        this.bonus = false; //This is randomly set to true from the appear function. If its true and the lilly is safe, a bonusFly appears.
     };
 
-    //This contols the flys in a way that they dont appear on a lilly pad with a safed frog
+    //This contols the flys in a way that they dont appear on a lilly pad with a safed frog.
     bonusFly() {
         if (this.bonus && this.safe ) {
             this.image = fly ;
@@ -673,8 +661,9 @@ class ScoreFrog {
         };
     };
 
-    //This function controls the points award and the images on the lilly pads
-    //also resets the frog to start position
+    //This function controls the points award and the images on the lilly pads.
+    //Shows a happy frog if the lilly is used.
+    //Also resets the frog to start position.
     score(frog) {
         this.right = this.x + unit;
         this.bottom = this.y + unit;
@@ -689,14 +678,17 @@ class ScoreFrog {
                     points += 100 ;
                 } else {
                     points += 50;
-                }
+                };
                 this.safe = false;
                 this.image = scoreFrog;
                 if (hightScore < points) {
                     hightScore = points;
-                }
+                    if (savedHighScore < hightScore) {
+                        window.localStorage.setItem('froggerHighScore', JSON.stringify(hightScore));
+                    };
+                };
                 death = true;
-                score++
+                score++ ;
                 pointsLevel = 740;
                 setTimeout(() => {
                     frog.reset();
@@ -715,19 +707,19 @@ class ScoreFrog {
 var frog = new Frog(unit * 7, canvas.height - unit * 2, frogImage);
 var timer = new Timer(unit * 2 - 15, canvas.height - 37, 'yellow', 9, 0.004);
 
+//the gameScreens are loaded and wait off screen.
 var start = new GameScreen( -unit * 14, 0, startScreen ) ;
 var over = new GameScreen( -unit * 14, 0, gameOverImage ) ;
 var next = new GameScreen( -unit * 14, 0, levelUpImage ) ;
 
 //The lilly pads
-var scoreFrogs = [new ScoreFrog(unit - 20, unit + 15, scoreLeaf)];
+var lillyPads = [new LillyPads(unit - 20, unit + 15, scoreLeaf)];
 for (let i = 0; i < 4; i++) {
-    scoreFrogs.push(new ScoreFrog(scoreFrogs[i].x + 138, unit + 15, scoreLeaf));
-}
+    lillyPads.push(new LillyPads(lillyPads[i].x + 138, unit + 15, scoreLeaf));
+};
 
-
-var firstRowCars = [] ;
 var lifeArray = [] ;
+var firstRowCars = [] ;
 var secondRowCars = [] ;
 var thirdRowCars = [] ;
 var raceCarRow = [] ;
@@ -744,7 +736,7 @@ for (let i = 0; i < 3; i++) {
     raceCarRow.push(new Car(canvas.width - ( 2 * unit ) - ( i * unit *  5), canvas.height - unit * 6, 1.4 * unit, 1, raceCar));   
     trucksRow.push(new Car( unit*2 + ( i * unit * 5), canvas.height - unit * 7, -1.4 * unit, 2, truck));     
     lifeArray.push(new Life(unit * (11 + i), canvas.height - unit + 10, life)); 
-    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, 3, -1 * unit, turtlesImage));   
+    turtleArray.push(new Turtles(  unit * 2 + ( i * unit * 6), canvas.height - unit * 9, 3, -1 * unit, turtlesImage));      
     turtleArray2.push(new Turtles(  unit * 2 + ( i * 6 * unit), canvas.height - unit * 12, 2, -1.5 * unit, turtlesRight));    
     logsArray.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 5.7), canvas.height - unit * 10, 3, 1 * unit, log3));   
     logsArray2.push(new Log(canvas.width - ( 2 * unit ) - ( i * unit * 6), canvas.height - unit * 11, 4, 1.6 * unit, log4));
@@ -759,7 +751,7 @@ function refreshScreen(timeStamp) {
     let deltaTime = timeStamp - lastTimeStamp ;
     lastTimeStamp = timeStamp ;
 
-    context.clearRect(0, 0, canvas.width, canvas.height)
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < firstRowCars.length; i++) {
         firstRowCars[i].move(deltaTime);
@@ -799,22 +791,22 @@ function refreshScreen(timeStamp) {
         logsArray3[i].swim(deltaTime); 
         logsArray3[i].draw();
         logsArray3[i].carry(frog, deltaTime); 
-    }
+    };
     
-    for (let i = 0; i < scoreFrogs.length; i++) {
-        scoreFrogs[i].draw();
-        scoreFrogs[i].score(frog);
-        scoreFrogs[i].bonusFly() ;
-    } 
+    for (let i = 0; i < lillyPads.length; i++) {
+        lillyPads[i].draw();
+        lillyPads[i].score(frog);
+        lillyPads[i].bonusFly();
+    };
 
     for (let i = 0; i < lifeArray.length; i++) {
         lifeArray[i].draw();
-    }
+    };
 
     context.font = '28pt Calibri';
     context.fillStyle = 'white';
     context.fillText(points, unit * 2 + 10, 32);
-    context.fillText(hightScore, unit * 8 + 20, 32);
+    context.fillText(JSON.parse(window.localStorage.getItem('froggerHighScore')), unit * 8 + 20, 32);
     
     timer.diminish();
     timer.draw();
@@ -822,19 +814,19 @@ function refreshScreen(timeStamp) {
     frog.draw();
     start.startGame();
     start.draw();
-    next.levelUp() ;
+    next.levelUp();
     next.draw();
-    over.gameEnd() ;
+    over.gameEnd();
     over.draw();
     
     if (!death) {
         window.requestAnimationFrame(refreshScreen);
-    } ;
+    };
 };
 
 window.requestAnimationFrame(refreshScreen);
-appear(scoreFrogs);
-diveTimer() ;
+appear(lillyPads);
+diveTimer();
 
 
 //The controls of the game based on 4 different states.
@@ -846,52 +838,52 @@ window.addEventListener('keydown', function (event) {
                 frog.image = frogLeftImage;
                 setTimeout(() => {
                     frog.image = frogLeft;
-                }, 74)
+                }, 74);
                 break;
             case 38:
                 frog.moveUp();
                 frog.image = frogUpImage;
                 setTimeout(() => {
                     frog.image = frogImage;
-                }, 74)
+                }, 74);
                 break;
             case 39:
                 frog.moveRight();
                 frog.image = frogRightImage;
                 setTimeout(() => {
                     frog.image = frogRight;
-                }, 74)
+                }, 74);
                 break;
             case 40:
                 frog.moveDown();
                 frog.image = frogDownImage;
                 setTimeout(() => {
                     frog.image = frogDown;
-                }, 74)
+                }, 74);
                 break;
-        }
+        };
     } else if (levelUp) {
         switch (event.keyCode) {
             case 32:
-                for (let i = 0; i < scoreFrogs.length; i++) {
-                    scoreFrogs[i].image = scoreLeaf;
-                    scoreFrogs[i].safe = true;
+                for (let i = 0; i < lillyPads.length; i++) {
+                    lillyPads[i].image = scoreLeaf;
+                    lillyPads[i].safe = true;
                 };
                 levelUp = false;
                 objSpeed += 0.5;
                 score = 0;
                 timer.length = 9 ;
-                timer.speed = 0.004 ;
+                timer.speed = 0.004;
                 break;
         }
     } else if ( startGame ) {
         switch (event.keyCode) {
             case 32: 
-                startGame = false ;
-                    timer.length = 9 ;
-                    timer.speed = 0.004 ;
+                startGame = false;
+                    timer.length = 9;
+                    timer.speed = 0.004;
                 break;
-        }
+        };
     } else {
         switch (event.keyCode) {
             case 32:
@@ -906,9 +898,9 @@ window.addEventListener('keydown', function (event) {
                 for (let i = 0; i < 3; i++) {
                     lifeArray.push(new Life(unit * (11 + i), canvas.height - unit + 10, life));
                 };
-                for (let i = 0; i < scoreFrogs.length; i++) {
-                    scoreFrogs[i].image = scoreLeaf;
-                    scoreFrogs[i].safe = true;
+                for (let i = 0; i < lillyPads.length; i++) {
+                    lillyPads[i].image = scoreLeaf;
+                    lillyPads[i].safe = true;
                 };
                 break;
         };
