@@ -806,7 +806,10 @@ function refreshScreen(timeStamp) {
     context.font = '28pt Calibri';
     context.fillStyle = 'white';
     context.fillText(points, unit * 2 + 10, 32);
-    context.fillText(JSON.parse(window.localStorage.getItem('froggerHighScore')), unit * 8 + 20, 32);
+    if (JSON.parse(window.localStorage.getItem('froggerHighScore'))) {
+        context.fillText(JSON.parse(window.localStorage.getItem('froggerHighScore')), unit * 8 + 20, 32);
+    }
+    
     
     timer.diminish();
     timer.draw();
