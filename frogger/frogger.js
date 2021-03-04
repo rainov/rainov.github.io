@@ -15,7 +15,7 @@ var ride = false; //This resets to false every time when the frog moves. Its tru
 var levelUp = false; //Upon saving all 5 frogs, this shows up the levelUp screen and changes the behavior of the space button.
 var points = 0; //The current points displayed on the screen.
 var pointsLevel = 740; //This is diminnishing when the frog moves up. Prevents accumulating points for going back and forward.
-var hightScore = 0; //HighScore for the current game, not displayed.
+var hightScore = 0; //HighScore for the current game, not displayed. Its used only to measure the saved highScore in local storage
 if (JSON.parse(window.localStorage.getItem('froggerHighScore'))) {
 var savedHighScore = JSON.parse(window.localStorage.getItem('froggerHighScore')); //Alltime highscore.. thats the one displayed on the screen.
 } else {
